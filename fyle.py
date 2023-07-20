@@ -1,6 +1,7 @@
 from email.quoprimime import header_check
 from pprint import pprint
 import requests
+import csv
 
 
 class Movie_data:
@@ -40,34 +41,38 @@ class Movie_data:
         return max(self.films_data, key=lambda film: film['popularity'])['title']
 
     def give_movie_by_keywords(self, keywords):
+        titles_names = []
         for movie in self.films_data:
             if any(keywords in movie['overview'] for keyword in keywords):
-                return movie['title']
+                titles_names.append(movie['title'])
+        return titles_names
+
     def give_unique_genres(self):
-        Genres = []
+        genres = set()
         for movie in self.films_data:
-            Genres.extend(movie['genre_ids'])
-            fsetgen = frozenset(Genres)
-        return fsetgen
+            genres.update(movie['genre_ids'])
+        return frozenset(genres)
 
-    def delete_movie_by_genre_id(self,genre_id):
+    def delete_movie_by_genre_id(self, genre_id):
+        counter = -1
         for movie in self.films_data:
-            if movie['genre_ids'] == genre_id:
-                # del(self.films_data with movie)
-                return True
+            counter += 1
+            if genre_id in movie['genre_ids']:
+                self.films_data.pop(counter)
+                counter -= 1
 
-        return False
+        return 'movies deleted'
 
 
 
-exemplar_f = Movie_data(5)
+exemplar_f = Movie_data(3)
 
-exemplar_f.delete_movie_by_genre_id([28, 12, 878])
-pprint(exemplar_f.show_keys())
+exemplar_f.delete_movie_by_genre_id(28)
+# pprint(exemplar_f.show_keys())
 # pprint(exemplar_f.give_all_data())
-# pprint(exemplar_f.give_most_popular_film())
-pprint(exemplar_f.give_data_from_pages(3))
-# pprint(exemplar_f.give_movie_by_keywords("In the wake"))
+pprint(exemplar_f.give_most_popular_film())
+# pprint(exemplar_f.give_data_from_pages(3))
+# pprint(exemplar_f.give_movie_by_keywords("in the m"))
 # pprint(exemplar_f.give_unique_genres())
 
 # url = 'https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&sort_by=popularity.desc&page= 5'

@@ -1,5 +1,8 @@
 from email.quoprimime import header_check
 from pprint import pprint
+from collections import defaultdict
+from collections import namedtuple
+from datetime import datetime, timedelta
 import requests
 import csv
 
@@ -59,18 +62,62 @@ class Movie_data:
             counter += 1
             if genre_id in movie['genre_ids']:
                 self.films_data.pop(counter)
-                counter -= 1
-
         return 'movies deleted'
+
+    def collection_grouped_by_genres(self):
+        genres = defaultdict(list)
+        for movie in self.films_data:
+            for genre_id in movie['genre_ids']:
+                genres[genre_id].append(movie['title'])
+        return genres
+
+    def replaced_films(self):
+        copyed_data = self.films_data.copy()
+        for movie in self.films_data:
+            if movie['genre_ids']:
+                movie['genre_ids'][0] = 22
+        return copyed_data, self.films_data
+
+    def collection_of_structures(self):
+        pairs = []
+        for movie in self.films_data:
+            title = movie['title']
+            popularity = round(movie['popularity'], 1)
+            score = int(movie['vote_average'])
+            f_date = datetime.strptime(movie['release_date'], '%Y-%m-%d')
+            last_day_in_cinema = f_date + timedelta(weeks=14)
+
+            pairs.append({
+                'Title': title,
+                'Popularity': popularity,
+                'Score': score,
+                'Last_day_in_cinema': last_day_in_cinema.strftime('%Y-%m-%d')
+            })
+
+        pairs.sort(key=lambda movie: (movie['Score'], movie['Popularity']), reverse=True)
+        return pairs
+
+    def write_to_file(self, pairs, filepath):
+        if str(filepath).lower().endswith('.csv'):
+            with open(filepath, 'w', newline='') as file:
+                fieldnames = ['Title', 'Popularity', 'Score', 'Last_day_in_cinema']
+                csv_writer = csv.DictWriter(file, fieldnames=fieldnames)
+                csv_writer.writeheader()
+                csv_writer.writerow(pairs)
 
 
 
 exemplar_f = Movie_data(3)
 
-exemplar_f.delete_movie_by_genre_id(28)
+# exemplar_f.delete_movie_by_genre_id(28)
+pair = exemplar_f.collection_of_structures()
+exemplar_f.write_to_file(pair[0], 'cwecm.csv')
 # pprint(exemplar_f.show_keys())
-# pprint(exemplar_f.give_all_data())
-pprint(exemplar_f.give_most_popular_film())
+pprint(exemplar_f.give_all_data())
+# pprint(exemplar_f.collection_of_structures())
+# pprint(exemplar_f.replaced_films())
+# pprint(exemplar_f.collection_grouped_by_genres())
+# pprint(exemplar_f.give_most_popular_film())
 # pprint(exemplar_f.give_data_from_pages(3))
 # pprint(exemplar_f.give_movie_by_keywords("in the m"))
 # pprint(exemplar_f.give_unique_genres())

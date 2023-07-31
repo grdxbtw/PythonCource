@@ -16,8 +16,8 @@ class Movie_data:
         self.films_data = []
 
         self.headers = {
-            "accept": "application/json",
-            "Authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIzMTI3NGFmYTRlNTUyMjRjYzRlN2Q0NmNlMTNkOTZjOSIsInN1YiI6IjVkNmZhMWZmNzdjMDFmMDAxMDU5NzQ4OSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.lbpgyXlOXwrbY0mUmP-zQpNAMCw_h-oaudAJB6Cn5c8"
+            'accept': 'application/json',
+            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIzMTI3NGFmYTRlNTUyMjRjYzRlN2Q0NmNlMTNkOTZjOSIsInN1YiI6IjVkNmZhMWZmNzdjMDFmMDAxMDU5NzQ4OSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.lbpgyXlOXwrbY0mUmP-zQpNAMCw_h-oaudAJB6Cn5c8'
         }
         self.fetch_data()
         self.genres = self.fetch_genres()
@@ -48,28 +48,26 @@ class Movie_data:
         return max(self.films_data, key=lambda film: film['popularity'])['title']
 
     def give_movie_by_keywords(self, keywords):
-        titles_names = []
-        for movie in self.films_data:
-            if any(keywords in movie['overview'] for keyword in keywords):
-                titles_names.append(movie['title'])
+        titles_names = [movie['title'] for movie in self.films_data if any(keywords in movie['overview'] for keyword in keywords)]
+        # titles_names = []
+        # for movie in self.films_data:
+        #     if any(keywords in movie['overview'] for keyword in keywords):
+        #         titles_names.append(movie['title'])
         return titles_names
 
     def give_unique_genres(self):
         return frozenset(genre for genre in self.genres.values())
 
-    def delete_movie_by_genre_id(self, genre_id):
-        counter = -1
-        for movie in self.films_data:
-            counter += 1
-            if genre_id in movie['genre_ids']:
-                self.films_data.pop(counter)
+    def delete_movie_by_genre(self, genre):
+        genre_id = [key for key in self.genres if self.genres[key] == genre]
+        self.films_data = list(filter(lambda x: genre_id[0] not in x['genre_ids'], self.films_data))
         return 'movies deleted'
 
     def give_most_popular_genre(self):
-        genre_c = []
-        for movie in self.films_data:
-            for genre_id in movie['genre_ids']:
-                genre_c.append(genre_id)
+        genre_c = [genre_id for movie in self.films_data for genre_id in movie['genre_ids']]
+        # for movie in self.films_data:
+        #     for genre_id in movie['genre_ids']:
+        #         genre_c.append(genre_id)
         max_v = max(genre_c)
         return self.genres[max_v]
 
@@ -82,7 +80,7 @@ class Movie_data:
 
     def replaced_films(self):
         copyed_data = self.films_data.copy()
-        for movie in self.films_data:
+        for movie in copyed_data:
             if movie['genre_ids']:
                 movie['genre_ids'][0] = 22
         return copyed_data, self.films_data
@@ -120,18 +118,19 @@ class Movie_data:
 
 exemplar_f = Movie_data(3)
 pprint(exemplar_f.genres)
-exemplar_f.delete_movie_by_genre_id(28)
-pair = exemplar_f.collection_of_structures()
+pprint(exemplar_f.give_all_data())
+exemplar_f.delete_movie_by_genre('Fantasy')
+# pair = exemplar_f.collection_of_structures()
 # exemplar_f.write_to_file(pair[0], 'cwecm.csv')
 
-pprint(exemplar_f.give_most_popular_genre())
-# pprint(exemplar_f.give_all_data())
+# pprint(exemplar_f.give_most_popular_genre())
 # pprint(exemplar_f.collection_of_structures())
-# pprint(exemplar_f.replaced_films())
+
 pprint(exemplar_f.collection_grouped_by_genres())
-pprint(exemplar_f.give_most_popular_film())
-pprint(exemplar_f.give_data_from_pages(3))
-pprint(exemplar_f.give_movie_by_keywords("in the "))
+# pprint(exemplar_f.replaced_films())
+# pprint(exemplar_f.give_most_popular_film())
+# pprint(exemplar_f.give_data_from_pages(3))
+# pprint(exemplar_f.give_movie_by_keywords("in the"))
 pprint(exemplar_f.give_unique_genres())
 
 # url = 'https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&sort_by=popularity.desc&page= 5'

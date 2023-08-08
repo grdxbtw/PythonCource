@@ -1,11 +1,8 @@
-from email.quoprimime import header_check
 from pprint import pprint
 from collections import defaultdict
-from collections import namedtuple
 from datetime import datetime, timedelta
 import requests
 import csv
-
 
 class Movie_data:
     """Class to work with api data(movies) """
@@ -49,10 +46,6 @@ class Movie_data:
 
     def give_movie_by_keywords(self, keywords):
         titles_names = [movie['title'] for movie in self.films_data if any(keywords in movie['overview'] for keyword in keywords)]
-        # titles_names = []
-        # for movie in self.films_data:
-        #     if any(keywords in movie['overview'] for keyword in keywords):
-        #         titles_names.append(movie['title'])
         return titles_names
 
     def give_unique_genres(self):
@@ -65,9 +58,6 @@ class Movie_data:
 
     def give_most_popular_genre(self):
         genre_c = [genre_id for movie in self.films_data for genre_id in movie['genre_ids']]
-        # for movie in self.films_data:
-        #     for genre_id in movie['genre_ids']:
-        #         genre_c.append(genre_id)
         max_v = max(genre_c)
         return self.genres[max_v]
 
@@ -132,9 +122,3 @@ pprint(exemplar_f.collection_grouped_by_genres())
 # pprint(exemplar_f.give_data_from_pages(3))
 # pprint(exemplar_f.give_movie_by_keywords("in the"))
 pprint(exemplar_f.give_unique_genres())
-
-# url = 'https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&sort_by=popularity.desc&page= 5'
-# headers = {
-#     "accept": "application/json",
-#     "Authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIzMTI3NGFmYTRlNTUyMjRjYzRlN2Q0NmNlMTNkOTZjOSIsInN1YiI6IjVkNmZhMWZmNzdjMDFmMDAxMDU5NzQ4OSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.lbpgyXlOXwrbY0mUmP-zQpNAMCw_h-oaudAJB6Cn5c8"
-# }

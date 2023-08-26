@@ -197,6 +197,7 @@ def remove_data(structured_data):
     new_data = [row for row in structured_data if int(row['dob.data'][-4:]) < 1960]
     return new_data
 
+
 def make_archive(destination_folder):
     logging.info('make archive')
     shutil.make_archive(destination_folder, 'zip', destination_folder)
@@ -212,13 +213,9 @@ if __name__ == '__main__':
     args = parser_args()
     # args.filename, args.gender 'down_data' 'male'
     explore_data(url, params, args.filename)
-    pprint(give_filtered_data(args.filename, args.gender))
+    pprint(give_filtered_data(args.filename, rows_=args.rows))
     # rows = give_filtered_data(args.filename, args.gender)
     # pprint(add_fields_to_file(args.filename, rows))
     # pprint(parse_data(rows))
     # struct_data = parse_data(rows)
     # make_subfolders(structured_data)
-
-
-
-
